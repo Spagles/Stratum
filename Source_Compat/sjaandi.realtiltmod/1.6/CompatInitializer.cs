@@ -22,7 +22,9 @@ public static class CompatInitializer
     var roof = map.roofGrid.RoofAt(cell);
     if (roof != null && RoofStatCache.IsSkylight(roof))
     {
-      float transparency = RoofStatCache.GetTransparency(roof);
+      // Effective, not raw: this handler short-circuits Stratum's own GroundGlow prefix, so reading
+      // the bare stat here would make skylight coating stop affecting light entirely under Tilt.
+      float transparency = RoofStatCache.GetEffectiveTransparency(roof, Patches.GlowGrid_Patch.CoatingFor(map), cell);
       if (transparency > 0f)
       {
         float skyGlow = 0f;

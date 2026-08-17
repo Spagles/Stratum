@@ -109,7 +109,7 @@ public static class GlowGrid_Patch
   // GetEffectiveTransparency does a GetComponent list scan, so resolve the coating once per map.
   private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Map, SkylightCoating> coatingCache = new();
 
-  private static SkylightCoating? CoatingFor(Map map)
+  public static SkylightCoating? CoatingFor(Map map)
   {
     if (coatingCache.TryGetValue(map, out var coating)) return coating;
 
