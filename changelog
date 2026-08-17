@@ -1,3 +1,13 @@
+0.12.8:
+Balance: Skylights now let through noticeably more light, and the glass tiers are spread further apart. Reinforced glass panels are now the clearest roof to grow crops under, ahead of standard skylights, solar skylights, and luxury glass.
+Balance: Dirt, pollen, and snow on skylights now block half as much light as before, so a greenhouse degrades gradually instead of falling off a cliff once it gets slightly dusty.
+Balance: Colonists now clean skylights once they are half as dirty as before, and wiping down a lightly dusted panel is much quicker than scrubbing a filthy one. A colonist's cleaning speed now matters.
+Minor Feature: Added a setting controlling how much dirt, pollen, and snow on a skylight blocks light. Set it to 0% to make coatings purely cosmetic.
+Minor Feature: Added a setting scaling how much light every skylight transmits, up to fully transparent.
+Bug Fix: Skylight dirt, pollen, and snow had no effect on light at all for players using Tilt the Planet.
+Bug Fix: Interrupting a colonist part-way through cleaning a skylight still left the panel completely clean.
+Bug Fix: Changing skylight settings did not refresh lighting until something else forced the map to redraw.
+
 0.12.0:
 Compatibility: Added native compatibility for Telardo's MultiFloors.
 Compatibility: Light through stacked MultiFloors skylights now compounds, growing dimmer and taking on the colour of each pane it passes through.
