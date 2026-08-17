@@ -10,11 +10,24 @@ namespace SolarWeb.Stratum.AI.JobDrivers;
 
 public class CleanSkylight : JobDriver
 {
+  private const float BaseCleanWork = 240f;
+  private const float MinCleanWork = 20f;
+
+  private float workDone;
+  private float workRequired = BaseCleanWork;
+
   protected IntVec3 Cell => TargetA.Cell;
 
   public override bool TryMakePreToilReservations(bool errorOnFailed)
   {
     return pawn.Reserve(Cell, job, 1, -1, null, errorOnFailed);
+  }
+
+  public override void ExposeData()
+  {
+    base.ExposeData();
+    Scribe_Values.Look(ref workDone, "workDone", 0f);
+    Scribe_Values.Look(ref workRequired, "workRequired", BaseCleanWork);
   }
 
   protected override IEnumerable<Toil> MakeNewToils()
@@ -25,31 +38,37 @@ public class CleanSkylight : JobDriver
     yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.Touch);
 
     Toil clean = ToilMaker.MakeToil("MakeNewToils");
-    clean.defaultCompleteMode = ToilCompleteMode.Delay;
-    clean.defaultDuration = 120;
+    clean.defaultCompleteMode = ToilCompleteMode.Never;
     clean.handlingFacing = true;
     clean.initAction = delegate
     {
       pawn.rotationTracker.FaceCell(Cell);
+      workDone = 0f;
+      float coating = pawn.Map?.GetComponent<SkylightCoating>()?.GetCoatingOpacity(Cell) ?? 1f;
+      workRequired = Mathf.Max(MinCleanWork, BaseCleanWork * coating);
     };
-    clean.tickAction = delegate
+    clean.tickIntervalAction = delegate (int delta)
     {
       pawn.rotationTracker.FaceCell(Cell);
-      if (pawn.IsHashIntervalTick(15))
+      if (pawn.IsHashIntervalTick(15, delta))
       {
         FleckMaker.ThrowSmoke(Cell.ToVector3Shifted(), pawn.Map, 0.4f);
       }
-    };
-    clean.AddFinishAction(delegate
-    {
-      var dirt = pawn.Map?.GetComponent<SkylightCoating>();
-      if (dirt != null)
+
+      workDone += pawn.GetStatValue(StatDefOf.CleaningSpeed) * delta;
+      if (workDone >= workRequired)
       {
-        dirt.SetDirtLevel(Cell, 0f);
-        dirt.SetPollenLevel(Cell, 0f);
-        dirt.SetSnowLevel(Cell, 0f);
+        var dirt = pawn.Map?.GetComponent<SkylightCoating>();
+        if (dirt != null)
+        {
+          dirt.SetDirtLevel(Cell, 0f);
+          dirt.SetPollenLevel(Cell, 0f);
+          dirt.SetSnowLevel(Cell, 0f);
+        }
+        ReadyForNextToil();
       }
-    });
+    };
+    clean.WithProgressBar(TargetIndex.A, () => workDone / workRequired);
     clean.FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch);
     clean.WithEffect(EffecterDefOf.Clean, TargetIndex.A);
 

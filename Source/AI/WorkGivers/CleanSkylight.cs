@@ -21,16 +21,6 @@ public class CleanSkylight : WorkGiver_Scanner
     var map = pawn.Map;
     if (map == null) yield break;
 
-    IntVec3 mouseCell = Verse.UI.MouseCell();
-    if (mouseCell.InBounds(map))
-    {
-      var r = map.roofGrid.RoofAt(mouseCell);
-      var coating = map.GetComponent<SkylightCoating>();
-      float dVal = coating != null ? (coating.GetDirtLevel(mouseCell) + coating.GetPollenLevel(mouseCell) + coating.GetSnowLevel(mouseCell)) : 0f;
-      bool isHome = map.areaManager.Home[mouseCell];
-      bool isSkylight = r != null && Stats.RoofStatCache.IsSkylight(r);
-    }
-
     if (map.weatherManager.RainRate > 0.1f || map.weatherManager.SnowRate > 0.1f) yield break;
 
     var dirt = map.GetComponent<SkylightCoating>();
@@ -41,7 +31,7 @@ public class CleanSkylight : WorkGiver_Scanner
       var roof = map.roofGrid.RoofAt(cell);
       if (roof != null && Stats.RoofStatCache.IsSkylight(roof))
       {
-        if (dirt.GetDirtLevel(cell) + dirt.GetPollenLevel(cell) + dirt.GetSnowLevel(cell) > 0.2f)
+        if (dirt.GetCoatingOpacity(cell) > SkylightCoating.CleanThreshold)
         {
           yield return cell;
         }
@@ -71,8 +61,7 @@ public class CleanSkylight : WorkGiver_Scanner
       return false;
     }
 
-    float totalDirt = dirt.GetDirtLevel(cell) + dirt.GetPollenLevel(cell) + dirt.GetSnowLevel(cell);
-    if (totalDirt <= 0.2f)
+    if (dirt.GetCoatingOpacity(cell) <= SkylightCoating.CleanThreshold)
     {
       return false;
     }
