@@ -261,7 +261,7 @@ public class SolarRoofMapComponent : MapComponent
         }
         if (coatingComp != null && Stratum.Settings.enableSkylightCoating)
         {
-          cellToCoatingMap[cellInfo.cellIdx] = coatingComp.GetCoatingOpacity(pos);
+          cellToCoatingMap[cellInfo.cellIdx] = coatingComp.GetLightBlockedFraction(pos);
         }
       }
     }
@@ -294,9 +294,9 @@ public class SolarRoofMapComponent : MapComponent
               curOut *= (float)hp / cellInfo.maxHP;
             }
 
-            if (cellToCoatingMap.TryGetValue(cellInfo.cellIdx, out float coatingOpacity))
+            if (cellToCoatingMap.TryGetValue(cellInfo.cellIdx, out float lightBlocked))
             {
-              curOut *= UnityEngine.Mathf.Clamp01(1f - coatingOpacity);
+              curOut *= UnityEngine.Mathf.Clamp01(1f - lightBlocked);
             }
 
             float cellCur = curOut * skyGlow;

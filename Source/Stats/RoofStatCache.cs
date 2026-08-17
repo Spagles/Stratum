@@ -297,9 +297,21 @@ public static class RoofStatCache
         }
       }
     }
+    max = Mathf.Clamp01(max * Stratum.Settings.skylightTransmissionMultiplier);
     transparencyHashCache[hash] = max;
     transparencyByIndex[def.index] = max;
     return max;
+  }
+
+  // The multiplier above is a mod setting, so both memos have to be dropped when it moves.
+  public static void InvalidateTransparencyCache()
+  {
+    System.Array.Clear(transparencyHashCache, 0, transparencyHashCache.Length);
+    if (transparencyByIndex == null) return;
+    foreach (var def in DefDatabase<RoofDef>.AllDefs)
+    {
+      transparencyByIndex[def.index] = GetTransparency(def);
+    }
   }
 
   public static float GetEffectiveTransparency(RoofDef def, Map? map, IntVec3 cell)
@@ -316,7 +328,7 @@ public static class RoofStatCache
     if (baseTrans <= 0f) return 0f;
     if (coating != null && cell.IsValid)
     {
-      baseTrans *= Mathf.Clamp01(1f - coating.GetCoatingOpacity(cell));
+      baseTrans *= Mathf.Clamp01(1f - coating.GetLightBlockedFraction(cell));
     }
     return baseTrans;
   }

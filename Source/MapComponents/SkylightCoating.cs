@@ -149,6 +149,11 @@ public class SkylightCoating(Map map) : MapComponent(map)
     return CoatingTotal(map.cellIndices.CellToIndex(cell));
   }
 
+  public float GetLightBlockedFraction(IntVec3 cell)
+    => Mathf.Clamp01(GetCoatingOpacity(cell) * Stratum.Settings.skylightCoatingLightPenalty);
+
+  public const float CleanThreshold = 0.1f;
+
   private const float RoofQuantum = 0.05f;
   // Snow moves on every cell visit during a storm, where dirt and pollen move once per 250 ticks.
   // A Roofs dirty marks the cell's section plus all 8 neighbours' and rebuilds seven Stratum

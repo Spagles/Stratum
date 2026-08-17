@@ -16,6 +16,10 @@
   <Stratum_ModSettings_SkylightCoatingEnabled_Desc>Skylights will passively accumulate dirt, pollen, and snow over time, reducing light transmission.</Stratum_ModSettings_SkylightCoatingEnabled_Desc>
   <Stratum_ModSettings_SkylightCoatingDisabled_Desc>Skylights will remain perfectly clean, allowing maximum light passage indefinitely.</Stratum_ModSettings_SkylightCoatingDisabled_Desc>
   <Stratum_ModSettings_SkylightDirtAccumulationRate>Skylight dirt accumulation rate: {0}</Stratum_ModSettings_SkylightDirtAccumulationRate>
+  <Stratum_ModSettings_SkylightCoatingLightPenalty>Coating light penalty: {0}</Stratum_ModSettings_SkylightCoatingLightPenalty>
+  <Stratum_ModSettings_SkylightCoatingLightPenalty_Desc>How much of a skylight's dirt, pollen, and snow actually blocks light. At 0% a coating is purely cosmetic: it still builds up and can still be cleaned, but plants below never notice it. At 50% a fully filthy panel loses half its light. At 100% a coating blocks light one-for-one, which is harsh on crops, because plants only use the brightest half of the light range and so lose closer to two points of growth rate per point of dirt.</Stratum_ModSettings_SkylightCoatingLightPenalty_Desc>
+  <Stratum_ModSettings_SkylightTransmission>Skylight light transmission: {0}</Stratum_ModSettings_SkylightTransmission>
+  <Stratum_ModSettings_SkylightTransmission_Desc>Scales how much light every skylight lets through, before any dirt is applied. At 100% each panel uses its own transparency, so clearer panels stay better than cheap ones. Past about 115% every glass panel reaches fully transparent and that difference disappears, so set it there if you want skylights to be as good as open sky.</Stratum_ModSettings_SkylightTransmission_Desc>
 
   <Stratum_ModSettings_EnableLightningStrikesTargetRoofs>Lightning strikes target roofs</Stratum_ModSettings_EnableLightningStrikesTargetRoofs>
   <Stratum_ModSettings_LightningStrikesTargetRoofsEnabled_Desc>Lightning strikes can target cells covered by roofs.</Stratum_ModSettings_LightningStrikesTargetRoofsEnabled_Desc>

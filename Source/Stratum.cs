@@ -52,7 +52,13 @@ public class Stratum : Mod
     {
       listingStandard.Label("Stratum_ModSettings_SkylightDirtAccumulationRate".Translate(Settings.skylightDirtAccumulationRate.ToString("F2")));
       Settings.skylightDirtAccumulationRate = listingStandard.Slider(Settings.skylightDirtAccumulationRate, 0f, 2f);
+
+      listingStandard.Label("Stratum_ModSettings_SkylightCoatingLightPenalty".Translate(Settings.skylightCoatingLightPenalty.ToStringPercent()), -1f, "Stratum_ModSettings_SkylightCoatingLightPenalty_Desc".Translate());
+      Settings.skylightCoatingLightPenalty = listingStandard.Slider(Settings.skylightCoatingLightPenalty, 0f, 1f);
     }
+
+    listingStandard.Label("Stratum_ModSettings_SkylightTransmission".Translate(Settings.skylightTransmissionMultiplier.ToStringPercent()), -1f, "Stratum_ModSettings_SkylightTransmission_Desc".Translate());
+    Settings.skylightTransmissionMultiplier = listingStandard.Slider(Settings.skylightTransmissionMultiplier, 0.5f, 1.25f);
     listingStandard.Gap(18f);
 
     Text.Font = GameFont.Medium;
@@ -85,6 +91,11 @@ public class Stratum : Mod
   public override void WriteSettings()
   {
     base.WriteSettings();
+
+    // The transmission multiplier feeds GetTransparency, which memoizes per RoofDef, so both memos
+    // have to be dropped whenever settings are written -- including outside a running game.
+    Stats.RoofStatCache.InvalidateTransparencyCache();
+
     if (Current.ProgramState == ProgramState.Playing)
     {
       var maps = Find.Maps;
@@ -118,6 +129,9 @@ public class Stratum : Mod
         }
 
         map.mapDrawer?.WholeMapChanged((ulong)MapMeshFlagDefOf.Roofs);
+        // Lighting is baked into its own mesh, so a transmission or coating-penalty change stays
+        // invisible until GroundGlow is dirtied too.
+        map.mapDrawer?.WholeMapChanged((ulong)MapMeshFlagDefOf.GroundGlow);
       }
     }
   }

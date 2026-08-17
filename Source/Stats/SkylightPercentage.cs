@@ -24,8 +24,8 @@ public class SkylightPercentage : RoomStatWorker
       var roof = map.roofGrid.RoofAt(cell);
       if (roof != null && RoofStatCache.IsSkylight(roof))
       {
-        float opacity = skylightDirt != null ? skylightDirt.GetCoatingOpacity(cell) : 0f;
-        glassCount += (1f - opacity);
+        float lightBlocked = skylightDirt != null ? skylightDirt.GetLightBlockedFraction(cell) : 0f;
+        glassCount += (1f - lightBlocked);
       }
     }
 
