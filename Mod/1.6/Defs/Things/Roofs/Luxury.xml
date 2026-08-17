@@ -9,7 +9,7 @@
       <WorkToBuild>600</WorkToBuild>
       <Beauty>5.0</Beauty>
       <SolarWeb-Stratum-Insulation>0.50</SolarWeb-Stratum-Insulation>
-      <SolarWeb-Stratum-Transparency>0.6</SolarWeb-Stratum-Transparency>
+      <SolarWeb-Stratum-Transparency>0.75</SolarWeb-Stratum-Transparency>
       <SolarWeb-Stratum-ThermalConductivity>0.50</SolarWeb-Stratum-ThermalConductivity>
       <SolarWeb-Stratum-StuffInsulationMultiplier>0.2</SolarWeb-Stratum-StuffInsulationMultiplier>
       <SolarWeb-Stratum-DamageThreshold>2</SolarWeb-Stratum-DamageThreshold>

@@ -167,7 +167,7 @@
       <WorkToBuild>250</WorkToBuild>
       <Beauty>2.0</Beauty>
       <SolarWeb-Stratum-Insulation>0.25</SolarWeb-Stratum-Insulation>
-      <SolarWeb-Stratum-Transparency>0.8</SolarWeb-Stratum-Transparency>
+      <SolarWeb-Stratum-Transparency>0.88</SolarWeb-Stratum-Transparency>
       <SolarWeb-Stratum-ThermalConductivity>0.75</SolarWeb-Stratum-ThermalConductivity>
       <SolarWeb-Stratum-DamageThreshold>0</SolarWeb-Stratum-DamageThreshold>
       <SolarWeb-Stratum-ArmorRating>0.05</SolarWeb-Stratum-ArmorRating>
