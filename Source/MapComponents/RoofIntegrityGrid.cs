@@ -359,6 +359,60 @@ public class RoofIntegrityGrid(Map map) : MapComponent(map)
     return glassTints[index];
   }
 
+  /// <summary>
+  /// Mitigates <paramref name="amount"/> through the roof's damage threshold and armour, honouring
+  /// any compat hook that wants to own the calculation outright.
+  /// </summary>
+  /// <remarks>
+  /// Shared by <see cref="TakeDamage"/> and <see cref="WouldSurviveDamage"/> so the question
+  /// "will this roof stop the skyfaller?" and the answer applied on impact cannot drift apart.
+  /// They used to be computed separately, which let a roof pass the pre-impact check and then
+  /// survive the impact anyway -- destroying the pod and everything inside it.
+  /// </remarks>
+  private float ComputeEffectiveDamage(IntVec3 cell, RoofDef roof, ThingDef? stuff, float amount, float penetration, DamageInfo? dinfo)
+  {
+    float effectiveDamage = amount;
+
+    if (MapHookRegistry.TryCalculateRoofDamage(map, roof, stuff, amount, penetration, dinfo, ref effectiveDamage))
+      return effectiveDamage;
+
+    float dt = RoofStatCache.GetDamageThreshold(roof, stuff);
+    dt = MapHookRegistry.GetCellRoofDamageThreshold(map, cell, dt);
+
+    effectiveDamage -= dt;
+    if (effectiveDamage <= 0) return 0f;
+
+    float ar = RoofStatCache.GetArmorRating(roof, stuff);
+    ar = MapHookRegistry.GetCellRoofArmorRating(map, cell, ar);
+
+    float effectiveArmor = System.Math.Max(0f, ar - penetration);
+    return effectiveDamage * (1f - effectiveArmor);
+  }
+
+  /// <summary>
+  /// Would the roof over <paramref name="cell"/> still be standing after taking
+  /// <paramref name="amount"/> damage? Returns false when there is no roof to begin with.
+  /// </summary>
+  /// <remarks>
+  /// Deliberately deterministic where <see cref="TakeDamage"/> uses <c>GenMath.RoundRandom</c>:
+  /// rounding the damage down means a borderline roof reports as surviving, which routes the
+  /// skyfaller elsewhere. Erring toward relocation is always the safe direction.
+  /// </remarks>
+  public bool WouldSurviveDamage(IntVec3 cell, float amount, float penetration = 0f)
+  {
+    if (!cell.InBounds(map)) return false;
+    int index = map.cellIndices.CellToIndex(cell);
+    if (hitPoints[index] <= 0) return false;
+
+    var roof = map.roofGrid.RoofAt(cell);
+    if (roof == null) return false;
+
+    float effectiveDamage = ComputeEffectiveDamage(cell, roof, stuffDefs[index], amount, penetration, null);
+    if (effectiveDamage <= 0) return true;
+
+    return hitPoints[index] > UnityEngine.Mathf.FloorToInt(effectiveDamage);
+  }
+
   public void TakeDamage(IntVec3 cell, float amount, float penetration = 0f, DamageInfo? dinfo = null)
   {
     if (dinfo != null && !dinfo.Value.Def.harmsHealth) return;
@@ -371,25 +425,8 @@ public class RoofIntegrityGrid(Map map) : MapComponent(map)
     if (roof == null) return;
 
     var stuff = stuffDefs[index];
-    float dt = RoofStatCache.GetDamageThreshold(roof, stuff);
-    dt = MapHookRegistry.GetCellRoofDamageThreshold(map, cell, dt);
 
-    float ar = RoofStatCache.GetArmorRating(roof, stuff);
-    ar = MapHookRegistry.GetCellRoofArmorRating(map, cell, ar);
-
-    float effectiveDamage = amount;
-
-    bool handled = MapHookRegistry.TryCalculateRoofDamage(map, roof, stuff, amount, penetration, dinfo, ref effectiveDamage);
-
-    if (!handled)
-    {
-      effectiveDamage -= dt;
-      if (effectiveDamage <= 0) return;
-
-      float effectiveArmor = System.Math.Max(0f, ar - penetration);
-      effectiveDamage *= (1f - effectiveArmor);
-    }
-
+    float effectiveDamage = ComputeEffectiveDamage(cell, roof, stuff, amount, penetration, dinfo);
     if (effectiveDamage <= 0) return;
 
     int finalDamage = GenMath.RoundRandom(effectiveDamage);
