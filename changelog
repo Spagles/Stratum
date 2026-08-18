@@ -1,3 +1,10 @@
+0.12.13:
+Minor Feature: Added configurable retractable roof opening styles (Iris, Split X, Split Y, Quadrant, Linear Sweep, Console Radial), all normalized to match the baseline Iris duration.
+Minor Feature: Retractable roofs now dynamically scale movement rate and throttle power draw based on available grid surplus and battery energy.
+Bug Fix: Retractable roof transitions now pause when power is lost rather than continuing without power.
+Bug Fix: Intercepted drop pods and skyfallers now safely deflect to open ground without deleting contained pawns and cargo.
+Bug Fix: Prevented retractable roof cells from becoming orphaned and unclosable during interrupted closes or reload.
+
 0.12.8:
 Balance: Skylights now let through noticeably more light, and the glass tiers are spread further apart. Reinforced glass panels are now the clearest roof to grow crops under, ahead of standard skylights, solar skylights, and luxury glass.
 Balance: Dirt, pollen, and snow on skylights now block half as much light as before, so a greenhouse degrades gradually instead of falling off a cliff once it gets slightly dusty.
